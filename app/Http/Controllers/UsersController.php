@@ -8,8 +8,55 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendMail;
 
-class UsersController extends Controller
-{
+class UsersController extends Controller {
+	
+/**
+ * @OA\Post(
+ *   path="/api/signup",
+ *   summary="Signup a user",
+ * 	 @OA\Parameter(
+ * 	   name="first_name",
+ *     in="query",
+ * 		 @OA\Schema(
+ * 		   type="string"	
+ * 		 )									
+ * 	 ),
+ * 	 @OA\Parameter(
+ * 	   name="last_name",
+ *     in="query",
+ * 		 @OA\Schema(
+ * 		   type="string"	
+ * 		 )
+ * 	 ),
+ * 	 @OA\Parameter(
+ * 	   name="email",
+ *     in="query",
+ * 		 @OA\Schema(
+ * 		   type="string"	
+ * 		 )
+ * 	 ),
+ * 	 @OA\Parameter(
+ * 	   name="password",
+ *     in="query",
+ * 		 @OA\Schema(
+ * 		   type="string"	
+ * 		 )
+ * 	 ),
+ * 	 @OA\Parameter(
+ * 	   name="password_confirmation",
+ *     in="query",
+ * 		 @OA\Schema(
+ * 		   type="string"	
+ * 		 )
+ * 	 ),		
+ *   @OA\Response(response=201, description="User was created successfully"),
+ * 	 @OA\Response(response=400, description="Bad Request")	
+ * )
+ *
+ * Create a user in a database.
+ *
+ * @return \Illuminate\Http\Response
+ */
   public function signup(Request $request) {
 		$user = new User;
 
