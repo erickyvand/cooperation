@@ -19,3 +19,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::post('signup', 'UsersController@signup')->middleware('user');
+Route::post('login', 'UsersController@login');
