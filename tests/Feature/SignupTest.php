@@ -24,6 +24,7 @@ class SignupTest extends TestCase {
 			'password' => $password,
 			'password_confirmation' => $password
 		];
+		
 		$response = $this->json('POST', '/api/signup', $user);
 
 		$response

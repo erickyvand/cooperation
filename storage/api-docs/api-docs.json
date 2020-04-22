@@ -55,6 +55,36 @@
                     }
                 }
             }
+        },
+        "/api/login": {
+            "post": {
+                "summary": "Login a user",
+                "operationId": "App\\Http\\Controllers\\UsersController::login",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "password",
+                        "in": "query",
+                        "schema": {
+                            "type": "String"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User logged in successfully"
+                    },
+                    "401": {
+                        "description": "Unauthorized, invalid email or password, Please check your email to activate your account"
+                    }
+                }
+            }
         }
     }
 }
