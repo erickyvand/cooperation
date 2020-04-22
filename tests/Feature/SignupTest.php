@@ -16,13 +16,12 @@ class SignupTest extends TestCase {
 	 * @return void
 	 */
 	public function testCreateUser() {
-		$password = $this->faker->password;
 		$user = [
-			'first_name' => $this->faker->firstName,
-			'last_name' => $this->faker->lastName,
-			'email' => $this->faker->email,
-			'password' => $password,
-			'password_confirmation' => $password
+			'first_name' => 'John',
+			'last_name' => 'Blazza',
+			'email' => 'johndoe@gmail.com',
+			'password' => '$password12',
+			'password_confirmation' => '$password12'
 		];
 		
 		$response = $this->json('POST', '/api/signup', $user);

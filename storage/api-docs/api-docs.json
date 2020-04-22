@@ -85,6 +85,29 @@
                     }
                 }
             }
+        },
+        "/api/activate": {
+            "patch": {
+                "summary": "Activate acount to be able to log in",
+                "operationId": "App\\Http\\Controllers\\UsersController::activateAccount",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Account successfully activated now you can login"
+                    },
+                    "401": {
+                        "description": "Unauthorized, Invalid token"
+                    }
+                }
+            }
         }
     }
 }
