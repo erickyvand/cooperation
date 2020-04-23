@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\User;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendMail;
+use App\Mail\ResetPassword;
+use Illuminate\Support\Facades\Validator;
 
 class UsersController extends Controller {
 	
@@ -163,6 +165,64 @@ class UsersController extends Controller {
 				'status' => 200,
 				'message' => 'Account successfully activated now you can login'
 			]);
+		}
+	}
+
+	public function findAccount(Request $request) {
+		$user = new User;
+
+		$account = User::where('email', $request->input('email'))->first();
+
+		if ($account) {
+			$data = [
+				'names' => $account->first_name.' '.$account->last_name,
+				'token' => bcrypt($account->email)
+			];
+
+			$request->session()->put('reset', $data['token']);
+
+			Mail::to($account->email)->send(new ResetPassword($data));
+			return response()->json([
+				'status' => 200,
+				'message' => 'An email has been sent to your email account'
+			]);
+		} else {
+			return response()->json([
+				'status' => 404,
+				'error' => 'No account has been found'
+			], 404);
+		}
+
+	}
+
+	public function resetPassword(Request $request) {
+		if ($request->session()->has('reset') && $request->header('authorization') !== $request->session()->get('reset')) {
+			return response()->json([
+				'status' => 401,
+				'error' => 'Unauthorized to access this route'
+			], 401);
+		} else {
+			$validator = Validator::make($request->all(), [
+				'password' => 'required|string|min:8|confirmed'
+			]);
+
+			if ($validator->fails()) {
+				return response()->json([
+					'status' => 400,
+					'message' => 'Bad Request',
+					'data' => $validator->messages()
+				], 400); 
+			} else {
+				$user = new User;
+				$findUser = User::find($request->user()->id);
+				$findUser->password = bcrypt($request->input('password'));
+				$findUser->save();
+
+				return response()->json([
+					'status' => 200,
+					'message' => 'Password reset successfully'
+				]);
+			}
 		}
 	}
 }
