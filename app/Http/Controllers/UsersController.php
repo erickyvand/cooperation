@@ -63,13 +63,6 @@ class UsersController extends Controller {
 		$user->last_name = ucwords($request->last_name);
 		$user->email = $request->email;
 		$user->password = bcrypt($request->password);
-		
-		$data = [
-			'names' => $user->first_name.' '.$user->last_name,
-			'token' => bcrypt($request->last_name)
-		];
-
-		Mail::to($user->email)->send(new SendMail($data));
 
 		$user->save();
 
@@ -109,7 +102,6 @@ class UsersController extends Controller {
 	*/
 	public function login(Request $request) {
 		if (auth()->attempt(['email' => $request->email, 'password' => $request->password])) {
-
 			if ($request->user()->is_verified === 'true') {
 				return response()->json([
 					'status' => 200,
@@ -123,6 +115,11 @@ class UsersController extends Controller {
 					]
 				], 200);
 			} else {
+				$data = ['names' => $request->user()->first_name.' '.$request->user()->last_name, 'token' => $request->user()->createToken('authorization')->accessToken];
+		
+				$request->session()->put('secret', $data['token']);
+		
+				Mail::to($request->user()->email)->send(new SendMail($data));
 				return response()->json([
 					'status' => 401,
 					'error' => 'Please check your email to activate your account'
@@ -133,6 +130,39 @@ class UsersController extends Controller {
 				'status' => 401,
 				'error' => 'Unauthorized, invalid email or password'
 			], 401);
+		}
+	}
+
+	/**
+	 * @OA\Patch(
+	 * 	 path="/api/activate",
+	 *   summary="Activate acount to be able to log in",
+	 *   @OA\Parameter(
+	 *     name="Authorization",
+	 *     in="header",
+	 *     @OA\Schema(
+	 *       type="string"
+	 *     )
+	 *   ),
+	 *   @OA\Response(response=200, description="Account successfully activated now you can login"),  
+	 *   @OA\Response(response=401, description="Unauthorized, Invalid token")  
+	 * )
+	*/
+	public function activateAccount(Request $request) {
+		if ($request->session()->has('secret') && $request->header('authorization') !== $request->session()->get('secret')) {
+			error_log($request->session()->get('secret'));
+			return response()->json([
+				'status' => 401,
+				'error' => 'Unauthorized, Invalid token',
+			], 401);
+		} else {
+			$user = User::find($request->user()->id);
+			$user->is_verified = 'true';
+			$user->save();
+			return response()->json([
+				'status' => 200,
+				'message' => 'Account successfully activated now you can login'
+			]);
 		}
 	}
 }
