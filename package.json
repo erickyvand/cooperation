@@ -11,7 +11,7 @@
         "eslint": "./node_modules/.bin/eslint resources/assets/js/ test/ --ext .js,.vue"
     },
     "devDependencies": {
-        "axios": "^0.19",
+        "axios": "^0.21",
         "cross-env": "^7.0",
         "eslint": "^6.8.0",
         "eslint-loader": "^4.0.0",
